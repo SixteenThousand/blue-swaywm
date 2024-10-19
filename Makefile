@@ -1,9 +1,11 @@
+IGNORE="--ignore=Makefile"
 ifeq ($(XDG_CONFIG_DIR),)
-	CONF_DIR=$(HOME)/.config/sway
+	CONF_DIR=$(HOME)/.config
 else
-	CONF_DIR=$(XDG_CONFIG_DIR)/sway
+	CONF_DIR=$(XDG_CONFIG_DIR)
 endif
 install:
-	stow -S . -t $(CONF_DIR)
+	mkdir -p $(CONF_DIR)/waybar
+	stow -S . -t $(CONF_DIR) $(IGNORE)
 uninstall:
-	stow -D . -t $(CONF_DIR)
+	stow -D . -t $(CONF_DIR) $(IGNORE)
