@@ -2,7 +2,6 @@
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
 set $otherMod Mod4+Shift
-set $terminal wezterm
 
 
 ### KEYBOARD SETTINGS
@@ -50,14 +49,12 @@ bindsym {
     # Start your launcher
     $mod+a exec rofi -show drun
     $otherMod+a exec rofi -show filebrowser
-    Mod1+Tab exec rofi -show window
     # other app shortcuts
     $mod+b exec firefox
-    $mod+Shift+b exec firefox -P
     $mod+g exec alacritty -e "clifm"
-    $mod+Return exec $terminal
-    $otherMod+Return exec alacritty
-    $mod+t exec $terminal
+    $mod+Return exec wezterm
+    $otherMod+Return exec alacritty -e tmux
+    $mod+t exec thunderbird
     $mod+v exec neovide
 }
 
@@ -81,7 +78,9 @@ bindsym {
 ### MOVE FOCUS
 bindsym {
     $mod+w focus next
+    Mod1+Tab focus next
     $mod+x focus prev
+    Mod1+Shift+Tab focus prev
     $mod+1 workspace number 1
     $mod+2 workspace number 2
     $mod+3 workspace number 3
