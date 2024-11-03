@@ -96,13 +96,13 @@ bindsym {
     $mod+h workspace prev
     $mod+l workspace next
     $mod+Up exec swaymsg workspace \
-        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. + 3) % 9')
+        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. - 3) % 9')
     $mod+Down exec swaymsg workspace \
-        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. - 3) % 9')
-    $mod+k exec swaymsg workspace \
         $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. + 3) % 9')
-    $mod+j exec swaymsg workspace \
+    $mod+k exec swaymsg workspace \
         $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. - 3) % 9')
+    $mod+j exec swaymsg workspace \
+        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. + 3) % 9')
 }
 
 
