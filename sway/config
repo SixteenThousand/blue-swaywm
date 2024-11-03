@@ -176,13 +176,14 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 
-### WINDOW DECORATIONS
+## WINDOW DECORATIONS
 # get rid of those damn titlebars (except in tabbed mode)
-default_border pixel 8
-hide_edge_borders both
+default_border pixel 4
+# hide_edge_borders both
 smart_gaps on
-gaps inner 5
+gaps inner 0
 smart_borders on
+client.focused #1d6432cc #1d6432cc #ffffff
 
 
 ### MEDIA/HARDWARE CONTROLS
