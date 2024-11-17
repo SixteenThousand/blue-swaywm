@@ -1,11 +1,8 @@
-IGNORE=--ignore=Makefile
-ifeq ($(XDG_CONFIG_DIR),)
-	CONF_DIR=$(HOME)/.config
-else
-	CONF_DIR=$(XDG_CONFIG_DIR)
-endif
+dist/.local/bin/swayctl: swayctl/*.go
+	cd swayctl && go build -o ../dist/.local/bin/swayctl
+build: dist/.local/bin/swayctl
 install:
-	mkdir -p $(CONF_DIR)/waybar
-	stow -S . -t $(CONF_DIR) $(IGNORE)
+	mkdir -p $(HOME)/.config/waybar
+	stow -S dist -t $(HOME)
 uninstall:
-	stow -D . -t $(CONF_DIR) $(IGNORE)
+	stow -D dist -t $(HOME)
