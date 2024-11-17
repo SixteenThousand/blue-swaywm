@@ -63,7 +63,7 @@ bindsym {
 bindsym {
     $otherMod+q exit
     $otherMod+Delete exit; exec brightnessctl set 100%; exec systemctl poweroff 
-    $otherMod+c reload
+    $mod+Control+r reload
 }
 
 
