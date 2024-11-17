@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 )
 
@@ -18,6 +19,10 @@ type Container struct {
 	Name    string
 	Focused bool
 	Nodes   []Container
+}
+
+func printVersion() {
+	fmt.Println("swayctl, version 0.0.0")
 }
 
 func getCurrentWs() (Workspace, error) {
@@ -49,10 +54,34 @@ func getCurrentContainer() Container {
 	return current
 }
 
-func main() {
-	ws, err := getCurrentWs()
-	if err != nil {
-		MsgAndExit("Sway IPC connection failure", err)
+func WorkspaceCmd(cmd string, current int) int {
+	current = current + 8
+	switch cmd {
+	default:
+		return 1
+	case "prev":
+		current -= 1
+	case "next":
+		current += 1
+	case "down":
+		current += 3
+	case "up":
+		current -= 3
 	}
-	fmt.Println(ws)
+	return (current % 9) + 1
+}
+
+func main() {
+	switch os.Args[1] {
+	default:
+		printVersion()
+	case "workspace":
+		ws, err := getCurrentWs()
+		if err != nil {
+			MsgAndExit("Sway IPC connection failure", err)
+		}
+		fmt.Println(WorkspaceCmd(os.Args[2], ws.Num))
+	case "--version", "-v":
+		printVersion()
+	}
 }
