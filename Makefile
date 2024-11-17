@@ -1,4 +1,4 @@
-IGNORE="--ignore=Makefile"
+IGNORE=--ignore=Makefile
 ifeq ($(XDG_CONFIG_DIR),)
 	CONF_DIR=$(HOME)/.config
 else
