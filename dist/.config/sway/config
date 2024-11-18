@@ -77,10 +77,10 @@ bindsym {
 
 ### MOVE FOCUS
 bindsym {
-    $mod+w focus next
-    Mod1+Tab focus next
-    $mod+x focus prev
-    Mod1+Shift+Tab focus prev
+    $mod+w exec swaymsg [con_id="$(swayctl window next)"] focus
+    $mod+x exec swaymsg [con_id="$(swayctl window prev)"] focus
+    Mod1+Tab exec swaymsg [con_id="$(swayctl window next)"] focus
+    Mod1+Shift+Tab exec swaymsg [con_id="$(swayctl window prev)"] focus
     $mod+1 workspace number 1
     $mod+2 workspace number 2
     $mod+3 workspace number 3
@@ -91,18 +91,22 @@ bindsym {
     $mod+8 workspace number 8
     $mod+9 workspace number 9
     $mod+0 workspace number 10
-    $mod+Left   workspace prev
-    $mod+Right  workspace next
+
+    # normal change workspace
     $mod+h workspace prev
+    $mod+j exec swaymsg workspace $(swayctl workspace down)
+    $mod+k exec swaymsg workspace $(swayctl workspace up)
     $mod+l workspace next
-    $mod+Up exec swaymsg workspace \
-        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. - 3) % 9')
-    $mod+Down exec swaymsg workspace \
-        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. + 3) % 9')
-    $mod+k exec swaymsg workspace \
-        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. - 3) % 9')
-    $mod+j exec swaymsg workspace \
-        $(swaymsg --raw --type get_workspaces | jq '.[] | select(.focused) | .num | (. + 3) % 9')
+    $mod+Left  workspace prev
+    $mod+Down  exec swaymsg workspace $(swayctl workspace down)
+    $mod+Up    exec swaymsg workspace $(swayctl workspace up)
+    $mod+Right workspace next
+
+    # go to next number workspace
+    $mod+Control+h exec swaymsg workspace $(swayctl workspace prev)
+    $mod+Control+l exec swaymsg workspace $(swayctl workspace next)
+    $mod+Control+Left  exec swaymsg workspace $(swayctl workspace prev)
+    $mod+Control+Right exec swaymsg workspace $(swayctl workspace next)
 }
 
 
