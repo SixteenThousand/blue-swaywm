@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"slices"
 )
 
 type Workspace struct {
@@ -114,6 +115,47 @@ func WorkspaceCmd(cmd string, current int) int {
 	return (current % 9) + 1
 }
 
+func getWindows(layout []Container) []Container {
+	var result []Container
+	for _, con := range layout {
+		if len(con.Nodes) == 0 {
+			result = append(result, con)
+		} else {
+			result = slices.Concat(result, getWindows(con.Nodes))
+		}
+	}
+	return result
+}
+
+func getCurrentWindow(layout []Container) (Container, error) {
+	for _, con := range layout {
+		if con.Focused {
+			return con, nil
+		}
+	}
+	return Container{}, NewSwayCtlError("No focused window")
+}
+
+func WindowCmd(cmd string, windows []Container, currentId int) int {
+	var currentIndex int
+	for index, window := range windows {
+		if window.Id == currentId {
+			currentIndex = index
+		}
+	}
+	numWindows := len(windows)
+	var resultIndex int
+	switch cmd {
+	default:
+		return currentId
+	case "prev":
+		resultIndex = (currentIndex - 1 + numWindows) % numWindows
+	case "next":
+		resultIndex = (currentIndex + 1 + numWindows) % numWindows
+	}
+	return windows[resultIndex].Id
+}
+
 func main() {
 	switch os.Args[1] {
 	default:
@@ -130,6 +172,17 @@ func main() {
 			MsgAndExit("Sway IPC connection failure", err)
 		}
 		fmt.Println(layout)
+	case "window":
+		layout, err := getCurrentLayout()
+		if err != nil {
+			MsgAndExit("Sway IPC connection failure", err)
+		}
+		windows := getWindows(layout.Nodes)
+		currentWindow, err := getCurrentWindow(windows)
+		if err != nil {
+			MsgAndExit("Could not find focused window", err)
+		}
+		fmt.Println(WindowCmd(os.Args[2], windows, currentWindow.Id))
 	case "--version", "-v":
 		printVersion()
 	}
