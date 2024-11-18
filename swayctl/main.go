@@ -49,6 +49,49 @@ func getCurrentWs() (Workspace, error) {
 	return result, NewSwayCtlError("No workspace is focused")
 }
 
+func getCurrentLayout() (Workspace, error) {
+	var result Workspace
+	result, err := getCurrentWs()
+	if err != nil {
+		return result, err
+	}
+	ipcMsg := exec.Command("swaymsg", "-r", "-t", "get_tree")
+	ipcStdout, err := ipcMsg.StdoutPipe()
+	if err != nil {
+		return result, err
+	}
+	err = ipcMsg.Start()
+	if err != nil {
+		return result, err
+	}
+	var data struct {
+		Nodes []struct { // outputs
+			Type  string
+			Name  string // looking for eDP-1
+			Nodes []Workspace
+		}
+	}
+	if err := json.NewDecoder(ipcStdout).Decode(&data); err != nil {
+		return result, err
+	}
+	ipcMsg.Wait()
+	currentWs, err := getCurrentWs()
+	if err != nil {
+		return result, err
+	}
+	for _, wlOutput := range data.Nodes {
+		if wlOutput.Name == "eDP-1" {
+			for _, ws := range wlOutput.Nodes {
+				if ws.Num == currentWs.Num {
+					result.Nodes = ws.Nodes
+					return result, nil
+				}
+			}
+		}
+	}
+	return result, NewSwayCtlError("No output (monitor)")
+}
+
 func getCurrentContainer() Container {
 	var current Container
 	return current
@@ -81,6 +124,12 @@ func main() {
 			MsgAndExit("Sway IPC connection failure", err)
 		}
 		fmt.Println(WorkspaceCmd(os.Args[2], ws.Num))
+	case "layout":
+		layout, err := getCurrentLayout()
+		if err != nil {
+			MsgAndExit("Sway IPC connection failure", err)
+		}
+		fmt.Println(layout)
 	case "--version", "-v":
 		printVersion()
 	}
