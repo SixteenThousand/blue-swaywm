@@ -23,7 +23,7 @@ type Container struct {
 }
 
 func printVersion() {
-	fmt.Println("swayctl, version 0.0.0")
+	fmt.Println("swayctl, version 0.0.1")
 }
 
 func getCurrentWs() (Workspace, error) {
