@@ -3,6 +3,7 @@ swayctl/bin/swayctl: swayctl/*.go
 build: swayctl/bin/swayctl
 install:
 	mkdir -p $(HOME)/.config/waybar
+	mkdir -p $(HOME)/.local/share/swayctl
 	stow -S dist -t $(HOME)
 	sudo cp swayctl/bin/swayctl /usr/bin
 uninstall:

@@ -8,6 +8,8 @@ import (
 	"slices"
 )
 
+var WORKSPACES_ICON_PATH = os.Getenv("HOME") + "/.local/share/swayctl/workspaces.svg"
+
 type Workspace struct {
 	Name    string
 	Num     int
@@ -156,6 +158,66 @@ func WindowCmd(cmd string, windows []Container, currentId int) int {
 	return windows[resultIndex].Id
 }
 
+func WriteWorkspacesIcon() (string, error) {
+	// get workspaces
+	ipcMsg := exec.Command("swaymsg", "-r", "-t", "get_workspaces")
+	ipcStdout, err := ipcMsg.StdoutPipe()
+	if err != nil {
+		return WORKSPACES_ICON_PATH, err
+	}
+	err = ipcMsg.Start()
+	if err != nil {
+		return WORKSPACES_ICON_PATH, err
+	}
+	var workspaces []Workspace
+	if err := json.NewDecoder(ipcStdout).Decode(&workspaces); err != nil {
+		return WORKSPACES_ICON_PATH, err
+	}
+	ipcMsg.Wait()
+	// construct SVG
+	svg := `<svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 90 90"
+    >`
+	var row, col int
+	var useTag string
+	const (
+		focused_rgba  = "#3cc86499"
+		nonempty_rgba = "#3cc86466"
+	)
+	for _, ws := range workspaces {
+		col = (ws.Num - 1) % 3
+		row = ws.Num / 3
+		if ws.Focused {
+			useTag = fmt.Sprintf(
+				`<rect x="%d" y="%d" fill="%s" height="30" width="30" />`,
+				row*30,
+				col*30,
+				focused_rgba,
+			)
+		} else {
+			useTag = fmt.Sprintf(
+				`<rect x="%d" y="%d" fill="%s" height="30" width="30" />`,
+				row*30,
+				col*30,
+				nonempty_rgba,
+			)
+		}
+		svg += useTag
+	}
+	svg += "</svg>"
+	// write file
+	fp, err := os.Create(WORKSPACES_ICON_PATH)
+	if err != nil {
+		return WORKSPACES_ICON_PATH, err
+	}
+	_, err = fp.Write([]byte(svg))
+	if err != nil {
+		return WORKSPACES_ICON_PATH, err
+	}
+	return WORKSPACES_ICON_PATH, nil
+}
+
 func main() {
 	switch os.Args[1] {
 	default:
@@ -195,6 +257,12 @@ func main() {
 		case 2:
 			fmt.Println("swaymsg split vertical")
 		}
+	case "ws-icon":
+		path, err := WriteWorkspacesIcon()
+		if err != nil {
+			MsgAndExit("Could not make icon", err)
+		}
+		fmt.Println(path)
 	case "--version", "-v":
 		printVersion()
 	}
