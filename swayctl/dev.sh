@@ -1,1 +1,1 @@
-alias swayctl='../dist/.local/bin/swayctl'
+alias ctl='./bin/swayctl'
