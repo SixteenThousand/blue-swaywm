@@ -187,19 +187,19 @@ func WriteWorkspacesIcon() (string, error) {
 	)
 	for _, ws := range workspaces {
 		col = (ws.Num - 1) % 3
-		row = ws.Num / 3
+		row = (ws.Num - 1) / 3
 		if ws.Focused {
 			useTag = fmt.Sprintf(
 				`<rect x="%d" y="%d" fill="%s" height="30" width="30" />`,
-				row*30,
 				col*30,
+				row*30,
 				focused_rgba,
 			)
 		} else {
 			useTag = fmt.Sprintf(
 				`<rect x="%d" y="%d" fill="%s" height="30" width="30" />`,
-				row*30,
 				col*30,
+				row*30,
 				nonempty_rgba,
 			)
 		}

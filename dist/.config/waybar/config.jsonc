@@ -27,7 +27,7 @@
     "image#sway-workspaces": {
         "exec": "swayctl ws-icon",
         "size": 30,
-        "interval": 20
+        "interval": 10
     },
     "wlr/taskbar": {
         "format": "{icon}",
