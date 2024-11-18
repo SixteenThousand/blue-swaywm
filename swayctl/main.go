@@ -23,7 +23,7 @@ type Container struct {
 }
 
 func printVersion() {
-	fmt.Println("swayctl, version 0.0.1")
+	fmt.Println("swayctl, version 0.0.1.scratch")
 }
 
 func getCurrentWs() (Workspace, error) {
@@ -183,6 +183,18 @@ func main() {
 			MsgAndExit("Could not find focused window", err)
 		}
 		fmt.Println(WindowCmd(os.Args[2], windows, currentWindow.Id))
+	case "tile":
+		layout, err := getCurrentLayout()
+		if err != nil {
+			MsgAndExit("Sway IPC connection failure", err)
+		}
+		windows := getWindows(layout.Nodes)
+		switch len(windows) {
+		default:
+			fmt.Println(":")
+		case 2:
+			fmt.Println("swaymsg split vertical")
+		}
 	case "--version", "-v":
 		printVersion()
 	}
