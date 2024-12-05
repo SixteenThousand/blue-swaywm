@@ -1,1 +1,0 @@
-alias ctl='./bin/swayctl'

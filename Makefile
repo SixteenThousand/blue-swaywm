@@ -1,11 +1,12 @@
-swayctl/bin/swayctl: swayctl/*.go
-	cd swayctl && go build -o bin/swayctl
-build: swayctl/bin/swayctl
+ifeq ($(XDG_CONFIG_HOME),)
+	XDG_CONFIG_HOME=$(HOME)/.config
+endif
+dist/.local/bin/swayext: swayext.go
+	go build -o dist/.local/bin/swayext swayext.go
+build: dist/.local/bin/swayext
 install:
-	mkdir -p $(HOME)/.config/waybar
-	mkdir -p $(HOME)/.local/share/swayctl
+	mkdir -p $(XDG_CONFIG_HOME)/waybar
 	stow -S dist -t $(HOME)
-	sudo cp swayctl/bin/swayctl /usr/bin
 uninstall:
 	stow -D dist -t $(HOME)
-	sudo rm /usr/bin/swayctl
+	rmdir $(XDG_CONFIG_HOME)/waybar || :

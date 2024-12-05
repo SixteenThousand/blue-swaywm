@@ -77,10 +77,10 @@ bindsym {
 
 ### MOVE FOCUS
 bindsym {
-    $mod+w exec swaymsg [con_id="$(swayctl window next)"] focus
-    $mod+x exec swaymsg [con_id="$(swayctl window prev)"] focus
-    Mod1+Tab exec swaymsg [con_id="$(swayctl window next)"] focus
-    Mod1+Shift+Tab exec swaymsg [con_id="$(swayctl window prev)"] focus
+    $mod+w exec swaymsg [con_id="$(swayext window next)"] focus
+    $mod+x exec swaymsg [con_id="$(swayext window prev)"] focus
+    Mod1+Tab exec swaymsg [con_id="$(swayext window next)"] focus
+    Mod1+Shift+Tab exec swaymsg [con_id="$(swayext window prev)"] focus
     $mod+1 workspace number 1
     $mod+2 workspace number 2
     $mod+3 workspace number 3
@@ -94,19 +94,19 @@ bindsym {
 
     # normal change workspace
     $mod+h workspace prev
-    $mod+j exec swaymsg workspace $(swayctl workspace down)
-    $mod+k exec swaymsg workspace $(swayctl workspace up)
+    $mod+j exec swaymsg workspace $(swayext workspace down)
+    $mod+k exec swaymsg workspace $(swayext workspace up)
     $mod+l workspace next
     $mod+Left  workspace prev
-    $mod+Down  exec swaymsg workspace $(swayctl workspace down)
-    $mod+Up    exec swaymsg workspace $(swayctl workspace up)
+    $mod+Down  exec swaymsg workspace $(swayext workspace down)
+    $mod+Up    exec swaymsg workspace $(swayext workspace up)
     $mod+Right workspace next
 
     # go to next number workspace
-    $mod+Control+h exec swaymsg workspace $(swayctl workspace prev)
-    $mod+Control+l exec swaymsg workspace $(swayctl workspace next)
-    $mod+Control+Left  exec swaymsg workspace $(swayctl workspace prev)
-    $mod+Control+Right exec swaymsg workspace $(swayctl workspace next)
+    $mod+Control+h exec swaymsg workspace $(swayext workspace prev)
+    $mod+Control+l exec swaymsg workspace $(swayext workspace next)
+    $mod+Control+Left  exec swaymsg workspace $(swayext workspace prev)
+    $mod+Control+Right exec swaymsg workspace $(swayext workspace next)
 }
 
 
@@ -212,7 +212,7 @@ exec --no-startup-id flatpak run com.ktechpit.whatsie
 # exec --no-startup-id tlp start #needs root permissions
 
 # WINDOW RULES
-for_window [all] exec $(swayctl tile)
+for_window [all] exec $(swayext tile)
 
 ### IMPORTS
 # Include configs from 3 locations:
