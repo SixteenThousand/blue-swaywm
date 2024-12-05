@@ -205,11 +205,11 @@ bindsym {
 
 
 ### NOTIFICATIONS
-bindsym $mod+n exec makoctl dismiss
+bindsym $mod+n exec dunstctl close-all
 
 # AUTOSTART
 exec --no-startup-id flatpak run com.ktechpit.whatsie
-# exec --no-startup-id tlp start #needs root permissions
+exec --no-startup-id dunst & disown
 
 # WINDOW RULES
 for_window [all] exec $(swayext tile)
