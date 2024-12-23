@@ -77,16 +77,14 @@ bindsym {
     $super+j exec swaymsg workspace $(swayext workspace down)
     $super+k exec swaymsg workspace $(swayext workspace up)
     $super+l workspace next
-    $super+Left  workspace prev
-    $super+Down  exec swaymsg workspace $(swayext workspace down)
-    $super+Up    exec swaymsg workspace $(swayext workspace up)
+    $super+Left workspace prev
+    $super+Down exec swaymsg workspace $(swayext workspace down)
+    $super+Up exec swaymsg workspace $(swayext workspace up)
     $super+Right workspace next
 
     # go to next number workspace
-    $super+Control+h exec swaymsg workspace $(swayext workspace prev)
-    $super+Control+l exec swaymsg workspace $(swayext workspace next)
-    $super+Control+Left  exec swaymsg workspace $(swayext workspace prev)
-    $super+Control+Right exec swaymsg workspace $(swayext workspace next)
+    $super+Comma exec swaymsg workspace $(swayext workspace prev)
+    $super+Period exec swaymsg workspace $(swayext workspace next)
 }
 
 
@@ -97,9 +95,9 @@ bindsym {
     $moveMod+k move up
     $moveMod+l move right
     # Ditto, with arrow keys
-    $moveMod+Left  move left
-    $moveMod+Down  move down
-    $moveMod+Up    move up
+    $moveMod+Left move left
+    $moveMod+Down move down
+    $moveMod+Up move up
     $moveMod+Right move right
     # Move focused container to workspace
     $moveMod+1 move container to workspace number 1; workspace 1
