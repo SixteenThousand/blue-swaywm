@@ -1,0 +1,7 @@
+#!/bin/sh
+
+swaymsg --monitor --type subscribe '["workspace"]' | \
+	while read line
+	do
+		pkill -RTMIN+10 waybar
+	done

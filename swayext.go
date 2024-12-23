@@ -29,8 +29,6 @@ func MsgAndExit(msg string, err error) {
 	os.Exit(1)
 }
 
-var WORKSPACES_ICON_PATH = os.Getenv("HOME") + "/.local/share/swayctl/workspaces.svg"
-
 type Workspace struct {
 	Name    string
 	Num     int
@@ -180,6 +178,13 @@ func WindowCmd(cmd string, windows []Container, currentId int) int {
 }
 
 func WriteWorkspacesIcon() (string, error) {
+	// find workspace icon location
+	var WORKSPACES_ICON_PATH string
+	if len(os.Getenv("XDG_CONFIG_HOME")) != 0 {
+		WORKSPACES_ICON_PATH = os.Getenv("XDG_CONFIG_HOME") + "/sway/state/workspaces.svg"
+	} else {
+		WORKSPACES_ICON_PATH = os.Getenv("HOME") + "/.config/sway/state/workspaces.svg"
+	}
 	// get workspaces
 	ipcMsg := exec.Command("swaymsg", "-r", "-t", "get_workspaces")
 	ipcStdout, err := ipcMsg.StdoutPipe()

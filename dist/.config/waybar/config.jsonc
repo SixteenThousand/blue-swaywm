@@ -3,7 +3,7 @@
     "height": 30,
     "spacing": 0, // Gaps between modules
     "modules-left": [
-        "image#sway-workspaces",
+        "image#sway-ws-icon",
         "sway/workspaces",
         "sway/mode",
         "sway/scratchpad"
@@ -24,10 +24,10 @@
         "clock",
         "tray"
     ],
-    "image#sway-workspaces": {
-        "exec": "swayctl ws-icon",
-        "size": 30,
-        "interval": 10
+    "image#sway-ws-icon": {
+        "exec": "swayext ws-icon",
+        "signal": 10,
+        "size": 30
     },
     "wlr/taskbar": {
         "format": "{icon}",
