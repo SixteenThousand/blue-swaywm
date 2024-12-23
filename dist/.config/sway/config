@@ -158,6 +158,8 @@ bindsym $super+r mode "resize"
 ## WINDOW DECORATIONS
 # get rid of those damn titlebars (except in tabbed mode)
 default_border pixel 4
+# make the titlebar in tabbed mode nicer
+font pango:monospace 0.001
 # hide_edge_borders both
 smart_gaps on
 gaps inner 0
