@@ -41,9 +41,9 @@ bindsym {
     $super+a exec rofi -show drun
     # other app shortcuts
     $super+b exec firefox
-    $super+g exec alacritty -e "clifm"
+    $super+g exec $TERMINAL -e "clifm"
     $super+t exec thunderbird
-    $super+Return exec wezterm
+    $super+Return exec $TERMINAL
     $super+Shift+Return exec alacritty -e tmux
 }
 
