@@ -1,0 +1,7 @@
+#!/bin/sh
+
+swaymsg --monitor --type subscribe '["window"]' | \
+	while read line
+	do
+		swayext tabbed-no-titlebar
+	done

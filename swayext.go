@@ -283,6 +283,20 @@ func main() {
 		case 2:
 			fmt.Println("swaymsg split vertical")
 		}
+	case "tabbed-no-titlebar":
+		layout, err := getCurrentLayout()
+		if err != nil {
+			MsgAndExit("Sway IPC connection failure", err)
+		}
+		windows := getWindows(layout.Nodes)
+		layoutType := "default"
+		if len(windows) > 1 {
+			layoutType = "tabbed"
+		}
+		err = exec.Command("swaymsg", "layout", layoutType).Run()
+		if err != nil {
+			MsgAndExit("Sway IPC connection failure", err)
+		}
 	case "ws-icon":
 		path, err := WriteWorkspacesIcon()
 		if err != nil {

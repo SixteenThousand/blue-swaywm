@@ -189,9 +189,11 @@ exec --no-startup-id firefox https://web.whatsapp.com
 exec --no-startup-id dunst & disown
 exec --no-startup-id \
     ${XDG_CONFIG_HOME:-$HOME/.config}/sway/scripts/run_ws_icon & disown
+exec --no-startup-id \
+    ${XDG_CONFIG_HOME:-$HOME/.config}/sway/scripts/better_tabbed_mode & disown
 
 # WINDOW RULES
-for_window [all] exec $(swayext tile)
+# for_window [all] exec $(swayext tabbed-no-titlebar)
 
 ### IMPORTS
 # Include configs from 3 locations:
