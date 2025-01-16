@@ -25,7 +25,7 @@ seat seat0 hide_cursor when-typing enable
 
 ### OUTPUT CONFIGURATION
 # Wallpaper. Requires: desktop-backgrounds-compat, swaybg
-output * bg /home/thom/Pictures/Profile_Pics/Evening_River.jpg fill
+exec --no-startup-id ~/.swaybg
 
 # fixing the zoom
 # find outputs from swaymsg -t get_outputs (or xrandr --query on X11)
@@ -189,11 +189,6 @@ exec --no-startup-id firefox https://web.whatsapp.com
 exec --no-startup-id dunst & disown
 exec --no-startup-id \
     ${XDG_CONFIG_HOME:-$HOME/.config}/sway/scripts/run_ws_icon & disown
-exec --no-startup-id \
-    ${XDG_CONFIG_HOME:-$HOME/.config}/sway/scripts/better_tabbed_mode & disown
-
-# WINDOW RULES
-# for_window [all] exec $(swayext tabbed-no-titlebar)
 
 ### IMPORTS
 # Include configs from 3 locations:
