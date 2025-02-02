@@ -9,8 +9,3 @@ panel, etc.).
 If you want to use this config, just clone this repository and run `make 
 install` from inside it. You can run `make uninstall` later to remove it 
 again.
-
-
-## TODO
-
-- update waybar workspaces icon on signal
