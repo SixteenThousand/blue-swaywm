@@ -191,6 +191,9 @@ exec --no-startup-id dunst & disown
 exec --no-startup-id \
     ${XDG_CONFIG_HOME:-$HOME/.config}/sway/scripts/run_ws_icon & disown
 
+### RULES
+for_window [title=".*Video Bridge.*"] kill
+
 ### IMPORTS
 # Include configs from 3 locations:
 #  - /usr/share/sway/config.d
