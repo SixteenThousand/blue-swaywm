@@ -161,6 +161,7 @@ bindsym $super+r mode "resize"
 default_border pixel 4
 # make the titlebar in tabbed mode nicer
 font pango:monospace 0.001
+font FantasqueSansM Nerd Font 12
 # hide_edge_borders both
 smart_gaps on
 gaps inner 0
@@ -185,11 +186,9 @@ bindsym {
 ### NOTIFICATIONS
 bindsym $super+n exec dunstctl close-all
 
-# AUTOSTART
+### AUTOSTART
 exec --no-startup-id firefox https://web.whatsapp.com
 exec --no-startup-id dunst & disown
-exec --no-startup-id \
-    ${XDG_CONFIG_HOME:-$HOME/.config}/sway/scripts/run_ws_icon & disown
 
 ### RULES
 for_window [title=".*Video Bridge.*"] kill
