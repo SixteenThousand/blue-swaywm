@@ -124,7 +124,7 @@ workspace_layout default
 bindsym {
     # Switch the current container between different layout styles
     $super+s split toggle
-    $layoutMod+l layout toggle split tabbed
+    $layoutMod+Return layout toggle split tabbed
     $super+f fullscreen toggle
     $super+Shift+space floating toggle
     # Swap focus between the tiling area and the floating area
