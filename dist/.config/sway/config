@@ -74,14 +74,14 @@ bindsym {
     $super+9 workspace number 9
 
     # normal change workspace
-    $super+h workspace prev
-    $super+j exec swaymsg workspace $(swayext workspace down)
-    $super+k exec swaymsg workspace $(swayext workspace up)
-    $super+l workspace next
-    $super+Left workspace prev
-    $super+Down exec swaymsg workspace $(swayext workspace down)
-    $super+Up exec swaymsg workspace $(swayext workspace up)
-    $super+Right workspace next
+    $super+h exec swaymsg workspace $(swayext workspace up)
+    $super+j workspace next
+    $super+k workspace prev
+    $super+l exec swaymsg workspace $(swayext workspace down)
+    $super+Left  exec swaymsg workspace $(swayext workspace up)
+    $super+Down  workspace next
+    $super+Up    workspace prev
+    $super+Right exec swaymsg workspace $(swayext workspace down)
 
     # go to next number workspace
     $super+Comma exec swaymsg workspace $(swayext workspace prev)
