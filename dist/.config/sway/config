@@ -52,7 +52,7 @@ bindsym {
 bindsym {
     $super+Shift+q exit
     $super+Shift+Delete exit; exec brightnessctl set 100%; exec systemctl poweroff 
-    $super+Shift+r reload
+    $super+Shift+r reload; exec notify-send sway 'Reloaded!'
 }
 
 
@@ -111,7 +111,7 @@ bindsym {
     $moveMod+8 move container to workspace number 8; workspace 8
     $moveMod+9 move container to workspace number 9; workspace 9
     # scratchpad/special workspace
-    $moveMod+minus move scratchpad
+    $moveMod+minus border pixel 5; move scratchpad
     # Show the next scratchpad window or hide the focused scratchpad window.
     # If there are multiple scratchpad windows, this command cycles through them.
     $super+minus scratchpad show
@@ -126,7 +126,7 @@ bindsym {
     $super+s split toggle
     $layoutMod+Return layout toggle split tabbed
     $super+f fullscreen toggle
-    $super+Shift+space floating toggle
+    $super+Shift+space floating toggle; border pixel 5
     # Swap focus between the tiling area and the floating area
     $super+space focus mode_toggle
 }
