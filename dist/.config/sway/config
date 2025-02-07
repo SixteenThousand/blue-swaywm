@@ -1,9 +1,6 @@
 ### VARIABLES
-# Logo key. Use Mod1 for Alt.
-set $super Mod4
-set $alt Mod1
-set $layoutMod Mod4+Mod1
-set $moveMod Mod4+Shift
+set $layoutMod Super+Alt
+set $moveMod Super+Shift
 # this must be set for use in system wide config files
 set $mod Mod4
 
@@ -36,56 +33,56 @@ output eDP-1 scale 1
 
 ### LAUNCH/CLOSE APPS
 # kill focused window
-bindsym $super+q kill
+bindsym Super+q kill
 bindsym {
     # Start your launcher
-    $super+a exec rofi -show drun
+    Super+a exec rofi -show drun
     # other app shortcuts
-    $super+b exec firefox
-    $super+g exec gio launch ~/.local/share/applications/term-file-manager.desktop
-    $super+t exec thunderbird
-    $super+Return exec $TERMINAL
+    Super+b exec firefox
+    Super+g exec gio launch ~/.local/share/applications/term-file-manager.desktop
+    Super+t exec thunderbird
+    Super+Return exec $TERMINAL
 }
 
 
 ### META STUFF
 bindsym {
-    $super+Shift+q exit
-    $super+Shift+Delete exit; exec brightnessctl set 100%; exec systemctl poweroff 
-    $super+Shift+r reload; exec notify-send sway 'Reloaded!'
+    Super+Shift+q exit
+    Super+Shift+Delete exit; exec brightnessctl set 100%; exec systemctl poweroff 
+    Super+Shift+r reload; exec notify-send sway 'Reloaded!'
 }
 
 
 ### MOVE FOCUS
 bindsym {
-    $super+Tab exec 'rofi -show window'
-    $super+w exec swaymsg [con_id="$(swayext window next)"] focus
-    $super+x exec swaymsg [con_id="$(swayext window prev)"] focus
-    $alt+Tab exec swaymsg [con_id="$(swayext window next)"] focus
-    $alt+Shift+Tab exec swaymsg [con_id="$(swayext window prev)"] focus
-    $super+1 workspace number 1
-    $super+2 workspace number 2
-    $super+3 workspace number 3
-    $super+4 workspace number 4
-    $super+5 workspace number 5
-    $super+6 workspace number 6
-    $super+7 workspace number 7
-    $super+8 workspace number 8
-    $super+9 workspace number 9
+    Super+Tab exec 'rofi -show window'
+    Super+w exec swaymsg [con_id="$(swayext window next)"] focus
+    Super+x exec swaymsg [con_id="$(swayext window prev)"] focus
+    Alt+Tab exec swaymsg [con_id="$(swayext window next)"] focus
+    Alt+Shift+Tab exec swaymsg [con_id="$(swayext window prev)"] focus
+    Super+1 workspace number 1
+    Super+2 workspace number 2
+    Super+3 workspace number 3
+    Super+4 workspace number 4
+    Super+5 workspace number 5
+    Super+6 workspace number 6
+    Super+7 workspace number 7
+    Super+8 workspace number 8
+    Super+9 workspace number 9
 
     # normal change workspace
-    $super+h exec swaymsg workspace $(swayext workspace up)
-    $super+j workspace next
-    $super+k workspace prev
-    $super+l exec swaymsg workspace $(swayext workspace down)
-    $super+Left  exec swaymsg workspace $(swayext workspace up)
-    $super+Down  workspace next
-    $super+Up    workspace prev
-    $super+Right exec swaymsg workspace $(swayext workspace down)
+    Super+h exec swaymsg workspace $(swayext workspace up)
+    Super+j workspace next
+    Super+k workspace prev
+    Super+l exec swaymsg workspace $(swayext workspace down)
+    Super+Left  exec swaymsg workspace $(swayext workspace up)
+    Super+Down  workspace next
+    Super+Up    workspace prev
+    Super+Right exec swaymsg workspace $(swayext workspace down)
 
     # go to next number workspace
-    $super+Comma exec swaymsg workspace $(swayext workspace prev)
-    $super+Period exec swaymsg workspace $(swayext workspace next)
+    Super+Comma exec swaymsg workspace $(swayext workspace prev)
+    Super+Period exec swaymsg workspace $(swayext workspace next)
 }
 
 
@@ -114,7 +111,7 @@ bindsym {
     $moveMod+minus border pixel 5; move scratchpad
     # Show the next scratchpad window or hide the focused scratchpad window.
     # If there are multiple scratchpad windows, this command cycles through them.
-    $super+minus scratchpad show
+    Super+minus scratchpad show
 }
 
 
@@ -123,12 +120,12 @@ bindsym {
 workspace_layout default
 bindsym {
     # Switch the current container between different layout styles
-    $super+s split toggle
+    Super+s split toggle
     $layoutMod+Return layout toggle split tabbed
-    $super+f fullscreen toggle
-    $super+Shift+space floating toggle; border pixel 5
+    Super+f fullscreen toggle
+    Super+Shift+space floating toggle; border pixel 5
     # Swap focus between the tiling area and the floating area
-    $super+space focus mode_toggle
+    Super+space focus mode_toggle
 }
 
 
@@ -153,7 +150,7 @@ mode "resize" {
         Escape mode "default"
     }
 }
-bindsym $super+r mode "resize"
+bindsym Super+r mode "resize"
 
 
 ## WINDOW DECORATIONS
@@ -174,17 +171,17 @@ client.focused #1d6432cc #1d6432cc #ffffff #1d6432ee
 set $volume_step 2
 bindsym {
     # for non-laptops
-    $super+F1 exec amixer sset Master toggle
-    $super+F2 exec amixer sset Master $volume_step%-
-    $super+F3 exec amixer sset Master $volume_step%+
-    $super+F4 exec playerctl play-pause
-    $super+F7 exec brightnessctl set 10%+
-    $super+F6 exec brightnessctl set 10%-
+    Super+F1 exec amixer sset Master toggle
+    Super+F2 exec amixer sset Master $volume_step%-
+    Super+F3 exec amixer sset Master $volume_step%+
+    Super+F4 exec playerctl play-pause
+    Super+F7 exec brightnessctl set 10%+
+    Super+F6 exec brightnessctl set 10%-
 }
 
 
 ### NOTIFICATIONS
-bindsym $super+n exec dunstctl close-all
+bindsym Super+n exec dunstctl close-all
 
 ### AUTOSTART
 exec --no-startup-id firefox https://web.whatsapp.com
