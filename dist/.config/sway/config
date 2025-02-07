@@ -69,6 +69,7 @@ bindsym {
     Super+7 workspace number 7
     Super+8 workspace number 8
     Super+9 workspace number 9
+    Super+p workspace back_and_forth
 
     # normal change workspace
     Super+h exec swaymsg workspace $(swayext workspace up)
