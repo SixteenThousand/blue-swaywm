@@ -37,6 +37,8 @@ bindsym Super+q kill
 bindsym {
     # Start your launcher
     Super+a exec rofi -show drun
+    # Find & xdg-open a file
+    Super+o exec rofile
     # other app shortcuts
     Super+b exec firefox
     Super+g exec gio launch ~/.local/share/applications/term-file-manager.desktop
