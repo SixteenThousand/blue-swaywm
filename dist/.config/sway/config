@@ -34,6 +34,7 @@ output eDP-1 scale 1
 ### LAUNCH/CLOSE APPS
 # kill focused window
 bindsym Super+q kill
+bindsym Alt+F4 kill
 bindsym {
     # Start your launcher
     Super+a exec rofi -show drun
@@ -125,7 +126,7 @@ bindsym {
     # Switch the current container between different layout styles
     Super+s split toggle
     $layoutMod+Return layout toggle split tabbed
-    Super+f fullscreen toggle
+    F11 fullscreen toggle
     Super+Shift+space floating toggle; border pixel 5
     # Swap focus between the tiling area and the floating area
     Super+space focus mode_toggle
