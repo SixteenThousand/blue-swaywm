@@ -186,7 +186,7 @@ bindsym {
 bindsym Super+n exec dunstctl close-all
 
 ### AUTOSTART
-exec --no-startup-id firefox https://web.whatsapp.com
+exec --no-startup-id desktopctl autostart || :
 exec --no-startup-id dunst & disown
 
 ### RULES
