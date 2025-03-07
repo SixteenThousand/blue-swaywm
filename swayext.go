@@ -6,27 +6,16 @@ import (
 	"os"
 	"os/exec"
 	"slices"
+	"strconv"
 )
 
-type SwayCtlError struct {
-	msg string
-}
+const MONITOR = "eDP-1"
 
-func (err *SwayCtlError) Error() string {
-	return err.msg
-}
-
-func NewSwayCtlError(msg string) *SwayCtlError {
-	return &SwayCtlError{msg: msg}
-}
-
-func MsgAndExit(msg string, err error) {
-	fmt.Printf(
-		"\033[1;31mError: %s\033[0m\n\nOriginal Error:\n%s\n",
-		msg,
-		err.Error(),
-	)
-	os.Exit(1)
+type Container struct {
+	Id      int
+	Name    string
+	Focused bool
+	Nodes   []Container
 }
 
 type Workspace struct {
@@ -36,274 +25,178 @@ type Workspace struct {
 	Nodes   []Container
 }
 
-type Container struct {
-	Id      int
-	Name    string
-	Focused bool
-	Nodes   []Container
+func check(err error, msg string) {
+	if err != nil {
+		fmt.Printf(
+			"\x1b[1;31mError: %s\x1b[0m\n%s\n",
+			msg,
+			err.Error(),
+		)
+		os.Exit(1)
+	}
 }
 
-func printVersion() {
-	fmt.Println("swayctl, version 0.0.1.scratch")
+func fail(msg string) {
+	fmt.Printf(
+		"\x1b[1;31mError: %s\x1b[0m\n",
+		msg,
+	)
+	os.Exit(1)
 }
 
-func getCurrentWs() (Workspace, error) {
-	var result Workspace
-	ipcMsg := exec.Command("swaymsg", "-r", "-t", "get_workspaces")
-	ipcStdout, err := ipcMsg.StdoutPipe()
-	if err != nil {
-		return result, err
-	}
-	err = ipcMsg.Start()
-	if err != nil {
-		return result, err
-	}
+func printHelp() {
+	fmt.Println(`
+sway extensions (swayext)
+Use this to add some nifty little features to sway.
+
+Usage:
+	swayext workspace [+/-NUM]
+Focuses the workspace with number {CURRENT WORKSPACE NUMBER)+/-NUM,
+regardless of whether that workspace exists yet.
+	swayext window prev|next
+Cycles through windows on current workspace in no particular order,
+regardless of layout.
+	swayext workspace new
+Finds the lowest workspace number not yet taken, and goes to it.
+	`)
+	os.Exit(0)
+}
+
+func getWorkspaces() []Workspace {
+	ipcCmd := exec.Command("swaymsg", "-r", "-t", "get_workspaces")
+	ipcStdout, err := ipcCmd.StdoutPipe()
+	check(err, "getFocusedWs: could not connect to sway IPC")
+	defer ipcStdout.Close()
+	err = ipcCmd.Start()
+	check(err, "getFocusedWs: could not connect to sway IPC")
 	var workspaces []Workspace
-	if err := json.NewDecoder(ipcStdout).Decode(&workspaces); err != nil {
-		return result, err
-	}
-	ipcMsg.Wait()
-	for _, ws := range workspaces {
-		if ws.Focused {
-			return ws, nil
-		}
-	}
-	return result, NewSwayCtlError("No workspace is focused")
+	err = json.NewDecoder(ipcStdout).Decode(&workspaces)
+	check(err, "getFocusedWs: could not connect to sway IPC")
+	ipcCmd.Wait()
+	return workspaces
 }
 
-func getCurrentLayout() (Workspace, error) {
-	var result Workspace
-	result, err := getCurrentWs()
-	if err != nil {
-		return result, err
-	}
-	ipcMsg := exec.Command("swaymsg", "-r", "-t", "get_tree")
-	ipcStdout, err := ipcMsg.StdoutPipe()
-	if err != nil {
-		return result, err
-	}
-	err = ipcMsg.Start()
-	if err != nil {
-		return result, err
-	}
-	var data struct {
-		Nodes []struct { // outputs
-			Type  string
-			Name  string // looking for eDP-1
-			Nodes []Workspace
-		}
-	}
-	if err := json.NewDecoder(ipcStdout).Decode(&data); err != nil {
-		return result, err
-	}
-	ipcMsg.Wait()
-	currentWs, err := getCurrentWs()
-	if err != nil {
-		return result, err
-	}
-	for _, wlOutput := range data.Nodes {
-		if wlOutput.Name == "eDP-1" {
-			for _, ws := range wlOutput.Nodes {
-				if ws.Num == currentWs.Num {
-					result.Nodes = ws.Nodes
-					return result, nil
-				}
-			}
-		}
-	}
-	return result, NewSwayCtlError("No output (monitor)")
-}
-
-func getCurrentContainer() Container {
-	var current Container
-	return current
-}
-
-func WorkspaceCmd(cmd string, current int) int {
-	current = current + 8
-	switch cmd {
-	default:
-		return 1
-	case "prev":
-		current -= 1
-	case "next":
-		current += 1
-	case "down":
-		current += 3
-	case "up":
-		current -= 3
-	}
-	return (current % 9) + 1
-}
-
-func getWindows(layout []Container) []Container {
+func getLeaves(tree []Container) []Container {
 	var result []Container
-	for _, con := range layout {
+	for _, con := range tree {
 		if len(con.Nodes) == 0 {
 			result = append(result, con)
 		} else {
-			result = slices.Concat(result, getWindows(con.Nodes))
+			result = slices.Concat(result, getLeaves(con.Nodes))
 		}
 	}
 	return result
 }
 
-func getCurrentWindow(layout []Container) (Container, error) {
-	for _, con := range layout {
-		if con.Focused {
-			return con, nil
+func getWindows() []Container {
+	ipcCmd := exec.Command("swaymsg", "-r", "-t", "get_tree")
+	ipcStdout, err := ipcCmd.StdoutPipe()
+	check(err, "getWindows: could not connect to sway IPC")
+	err = ipcCmd.Start()
+	check(err, "getWindows: could not connect to sway IPC")
+	var data struct {
+		Nodes []struct { // outputs
+			Name              string
+			Nodes             []Workspace
+			Current_workspace string
 		}
 	}
-	return Container{}, NewSwayCtlError("No focused window")
-}
-
-func WindowCmd(cmd string, windows []Container, currentId int) int {
-	var currentIndex int
-	for index, window := range windows {
-		if window.Id == currentId {
-			currentIndex = index
+	err = json.NewDecoder(ipcStdout).Decode(&data)
+	check(err, "getWindows: could not connect to sway IPC")
+	ipcCmd.Wait()
+	for _, wlOutput := range data.Nodes {
+		if wlOutput.Name == MONITOR {
+			for _, ws := range wlOutput.Nodes {
+				if ws.Name == wlOutput.Current_workspace {
+					return getLeaves(ws.Nodes)
+				}
+			}
+			break
 		}
 	}
-	numWindows := len(windows)
-	var resultIndex int
-	switch cmd {
-	default:
-		return currentId
-	case "prev":
-		resultIndex = (currentIndex - 1 + numWindows) % numWindows
-	case "next":
-		resultIndex = (currentIndex + 1 + numWindows) % numWindows
-	}
-	return windows[resultIndex].Id
+	fail("getWindows: no workspace??")
+	return make([]Container, 1)
 }
 
-func WriteWorkspacesIcon() (string, error) {
-	// find workspace icon location
-	var WORKSPACES_ICON_PATH string
-	if len(os.Getenv("XDG_CONFIG_HOME")) != 0 {
-		WORKSPACES_ICON_PATH = os.Getenv("XDG_CONFIG_HOME") + "/sway/state/workspaces.svg"
-	} else {
-		WORKSPACES_ICON_PATH = os.Getenv("HOME") + "/.config/sway/state/workspaces.svg"
+func gotoWorkspace(num int) {
+	if num < 0 {
+		num = 0
 	}
-	// get workspaces
-	ipcMsg := exec.Command("swaymsg", "-r", "-t", "get_workspaces")
-	ipcStdout, err := ipcMsg.StdoutPipe()
-	if err != nil {
-		return WORKSPACES_ICON_PATH, err
-	}
-	err = ipcMsg.Start()
-	if err != nil {
-		return WORKSPACES_ICON_PATH, err
-	}
-	var workspaces []Workspace
-	if err := json.NewDecoder(ipcStdout).Decode(&workspaces); err != nil {
-		return WORKSPACES_ICON_PATH, err
-	}
-	ipcMsg.Wait()
-	// construct SVG
-	svg := `<svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 90 90"
-    >`
-	var row, col int
-	var useTag string
-	const (
-		focused_rgba  = "#3cc86499"
-		nonempty_rgba = "#3cc86466"
+	ipcCmd := exec.Command(
+		"swaymsg",
+		"workspace",
+		strconv.Itoa(num),
 	)
-	for _, ws := range workspaces {
-		col = (ws.Num - 1) % 3
-		row = (ws.Num - 1) / 3
-		if ws.Focused {
-			useTag = fmt.Sprintf(
-				`<rect x="%d" y="%d" fill="%s" height="30" width="30" />`,
-				col*30,
-				row*30,
-				focused_rgba,
-			)
-		} else {
-			useTag = fmt.Sprintf(
-				`<rect x="%d" y="%d" fill="%s" height="30" width="30" />`,
-				col*30,
-				row*30,
-				nonempty_rgba,
-			)
-		}
-		svg += useTag
-	}
-	svg += "</svg>"
-	// write file
-	fp, err := os.Create(WORKSPACES_ICON_PATH)
-	if err != nil {
-		return WORKSPACES_ICON_PATH, err
-	}
-	_, err = fp.Write([]byte(svg))
-	if err != nil {
-		return WORKSPACES_ICON_PATH, err
-	}
-	return WORKSPACES_ICON_PATH, nil
+	err := ipcCmd.Run()
+	check(err, "Could not get Sway IPC to change workspace")
+}
+
+func gotoWindow(windowId int) {
+	ipcCmd := exec.Command(
+		"swaymsg",
+		fmt.Sprintf("[con_id=%d]", windowId),
+		"focus",
+	)
+	err := ipcCmd.Run()
+	check(err, "Could not get Sway IPC to change window")
 }
 
 func main() {
+	if len(os.Args) <= 2 {
+		printHelp()
+	}
+	if len(os.Args) > 3 {
+		fail("Too many arguments!")
+	}
 	switch os.Args[1] {
-	default:
-		printVersion()
 	case "workspace":
-		ws, err := getCurrentWs()
-		if err != nil {
-			MsgAndExit("Sway IPC connection failure", err)
-		}
-		fmt.Println(WorkspaceCmd(os.Args[2], ws.Num))
-	case "layout":
-		layout, err := getCurrentLayout()
-		if err != nil {
-			MsgAndExit("Sway IPC connection failure", err)
-		}
-		fmt.Println(layout)
-	case "window":
-		layout, err := getCurrentLayout()
-		if err != nil {
-			MsgAndExit("Sway IPC connection failure", err)
-		}
-		windows := getWindows(layout.Nodes)
-		currentWindow, err := getCurrentWindow(windows)
-		if err != nil {
-			MsgAndExit("Could not find focused window", err)
-		}
-		fmt.Println(WindowCmd(os.Args[2], windows, currentWindow.Id))
-	case "tile":
-		layout, err := getCurrentLayout()
-		if err != nil {
-			MsgAndExit("Sway IPC connection failure", err)
-		}
-		windows := getWindows(layout.Nodes)
-		switch len(windows) {
+		switch os.Args[2] {
+		case "new":
+			var wsNums []int
+			for _, ws := range getWorkspaces() {
+				wsNums = append(wsNums, ws.Num)
+			}
+			slices.Sort(wsNums)
+			for i := 1; i < len(wsNums); i++ {
+				if wsNums[i] > wsNums[i-1]+1 {
+					gotoWorkspace(wsNums[i-1] + 1)
+					return
+				}
+			}
+			gotoWorkspace(len(wsNums) + 1)
 		default:
-			fmt.Println(":")
-		case 2:
-			fmt.Println("swaymsg split vertical")
+			delta, err := strconv.Atoi(os.Args[2])
+			check(err, "swayext workspace NUM: please give an actual (whole) number!")
+			focusedWsNum := -1
+			for _, ws := range getWorkspaces() {
+				if ws.Focused {
+					focusedWsNum = ws.Num
+					break
+				}
+			}
+			if focusedWsNum < 0 {
+				fail("No focused workspace??")
+			}
+			gotoWorkspace(focusedWsNum + delta)
 		}
-	case "tabbed-no-titlebar":
-		layout, err := getCurrentLayout()
-		if err != nil {
-			MsgAndExit("Sway IPC connection failure", err)
+	case "window":
+		focusedIndex := 0
+		windows := getWindows()
+		for index, window := range windows {
+			if window.Focused {
+				focusedIndex = index
+			}
 		}
-		windows := getWindows(layout.Nodes)
-		layoutType := "default"
-		if len(windows) > 1 {
-			layoutType = "tabbed"
+		numWindows := len(windows)
+		resultIndex := focusedIndex
+		switch os.Args[2] {
+		case "prev":
+			resultIndex = (focusedIndex - 1 + numWindows) % numWindows
+		case "next":
+			resultIndex = (focusedIndex + 1 + numWindows) % numWindows
 		}
-		err = exec.Command("swaymsg", "layout", layoutType).Run()
-		if err != nil {
-			MsgAndExit("Sway IPC connection failure", err)
-		}
-	case "ws-icon":
-		path, err := WriteWorkspacesIcon()
-		if err != nil {
-			MsgAndExit("Could not make icon", err)
-		}
-		fmt.Println(path)
-	case "--version", "-v":
-		printVersion()
+		gotoWindow(windows[resultIndex].Id)
+	default:
+		printHelp()
 	}
 }
