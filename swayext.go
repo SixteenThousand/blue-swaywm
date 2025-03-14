@@ -158,8 +158,8 @@ func main() {
 			}
 			slices.Sort(wsNums)
 			for i := 1; i < len(wsNums); i++ {
-				if wsNums[i] > wsNums[i-1]+1 {
-					gotoWorkspace(wsNums[i-1] + 1)
+				if wsNums[i] > i+1 {
+					gotoWorkspace(i + 1)
 					return
 				}
 			}
