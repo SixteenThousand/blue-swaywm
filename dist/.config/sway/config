@@ -63,6 +63,7 @@ bindsym {
     Super+x exec swayext window prev
     Alt+Tab exec swayext window next
     Alt+Shift+Tab exec swayext window prev
+    Super+u [urgent=newest] focus
     Super+1 workspace number 1
     Super+2 workspace number 2
     Super+3 workspace number 3
